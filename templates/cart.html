@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Seu Carrinho</h1>
+
+{% if cart_items %}
+<div class="cart-container">
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Subtotal</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>
+                    <div class="cart-item-info">
+                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
+                        <span>{{ item.product.name }}</span>
+                    </div>
+                </td>
+                <td>R$ {{ "%.2f"|format(item.product.price) }}</td>
+                <td>
+                    <div class="quantity-controls">
+                        <form action="{{ url_for('cart') }}" method="POST" class="qty-form">
+                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                            <input type="hidden" name="action" value="decrease">
+                            <button type="submit" class="btn-icon"><i class="ph ph-minus"></i></button>
+                        </form>
+                        <span>{{ item.quantity }}</span>
+                        <form action="{{ url_for('cart') }}" method="POST" class="qty-form">
+                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                            <input type="hidden" name="action" value="increase">
+                            <button type="submit" class="btn-icon"><i class="ph ph-plus"></i></button>
+                        </form>
+                    </div>
+                </td>
+                <td>R$ {{ "%.2f"|format(item.subtotal) }}</td>
+                <td>
+                    <form action="{{ url_for('cart') }}" method="POST">
+                        <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                        <input type="hidden" name="action" value="remove">
+                        <button type="submit" class="btn btn-danger btn-icon" style="padding: 0.5rem 1rem;">
+                            <i class="ph ph-trash"></i> Remover
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="cart-summary">
+        <div>
+            <span style="color: var(--text-muted);">Total da Compra:</span>
+            <div class="total-price">R$ {{ "%.2f"|format(total) }}</div>
+        </div>
+        <form action="{{ url_for('checkout') }}" method="POST">
+            <button type="submit" class="btn btn-primary" style="font-size: 1.25rem; padding: 1rem 2rem;">
+                <i class="ph ph-check-circle"></i> Finalizar Compra
+            </button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="ph ph-shopping-cart" style="font-size: 4rem; color: var(--text-muted);"></i>
+    <h3>Seu carrinho está vazio</h3>
+    <p>Adicione alguns produtos para prosseguir com a compra.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-top: 1rem;">
+        <i class="ph ph-storefront"></i> Voltar à Loja
+    </a>
+</div>
+{% endif %}
+{% endblock %}

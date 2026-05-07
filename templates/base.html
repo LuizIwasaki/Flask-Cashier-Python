@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexStore | O Mercado do Futuro</title>
+    <meta name="description" content="A melhor loja para produtos eletrônicos com design premium.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="brand">
+            <i class="ph ph-shopping-bag-open"></i>
+            <span>NexStore</span>
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('cart') }}" class="cart-link">
+                <i class="ph ph-shopping-cart"></i> Carrinho
+                {% if cart_count and cart_count > 0 %}
+                <span class="cart-badge">{{ cart_count }}</span>
+                {% endif %}
+            </a>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 NexStore. Todos os direitos reservados. Feito com Flask.</p>
+    </footer>
+
+    <script>
+        // Auto dismiss alerts after 3 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 3000);
+    </script>
+</body>
+</html>
