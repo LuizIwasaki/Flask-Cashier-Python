@@ -13,7 +13,7 @@
         <ul style="list-style: none; margin-bottom: 1rem;">
             {% for item in cart_items %}
             <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: var(--text-muted);">
-                <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                <span>{{ item.quantity }}x {{ item.product.nome }}</span>
                 <span>R$ {{ "%.2f"|format(item.subtotal) }}</span>
             </li>
             {% endfor %}

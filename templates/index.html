@@ -3,20 +3,143 @@
 {% block content %}
 <h1 class="page-title">Nossos Produtos</h1>
 
+<div class="filter-panel">
+    <form action="{{ url_for('index') }}" method="GET" class="filter-form">
+        <!-- Linha da Busca por Texto (SEMPRE VISÍVEL) -->
+        <div class="search-row-container">
+            <div class="search-box">
+                <i class="ph ph-magnifying-glass search-icon"></i>
+                <input type="text" name="q" value="{{ pesquisa }}" placeholder="Buscar por produtos ou descrição...">
+            </div>
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary"><i class="ph ph-magnifying-glass"></i> Buscar</button>
+                <button type="button" id="toggle_filters_btn"
+                    class="btn btn-outline {% if min_preco or max_preco %}active{% endif %}"
+                    style="padding: 0.75rem 1rem;">
+                    <i class="ph ph-sliders" style="font-size: 1.2rem;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Painel Recolhível de Preços (ESCONDIDO POR PADRÃO) -->
+        <div id="price_collapse_panel" class="price-filter-collapse {% if min_preco or max_preco %}show{% endif %}">
+            <div class="price-collapse-content">
+                <div class="price-row">
+                    <div class="price-input-group">
+                        <input type="text" inputmode="decimal" name="min_preco" id="min_preco" value="{{ min_preco }}"
+                            placeholder="Preço Mínimo (R$)" oninput="formatarMoeda(this)">
+                        <span class="price-separator">até</span>
+                        <input type="text" inputmode="decimal" name="max_preco" id="max_preco" value="{{ max_preco }}"
+                            placeholder="Preço Máximo (R$)" oninput="formatarMoeda(this)">
+                    </div>
+
+                    <div class="price-slider-group">
+                        <div class="slider-info">
+                            <span>Definir Máximo: R$ <strong id="slider_val">{{ max_preco if max_preco else
+                                    maior_preco|int }}</strong></span>
+                        </div>
+                        <input type="range" id="price_slider" min="0" max="{{ maior_preco|int }}"
+                            value="{{ max_preco if max_preco else maior_preco|int }}"
+                            oninput="atualizarPreco(this.value)">
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary"><i class="ph ph-funnel"></i> Aplicar</button>
+                        {% if pesquisa or min_preco or max_preco %}
+                        <a href="{{ url_for('index') }}" class="btn btn-danger"><i class="ph ph-trash-simple"></i>
+                            Limpar</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function formatarMoeda(input) {
+        // Remove tudo que não for número
+        let valor = input.value.replace(/\D/g, "");
+        if (valor === "") {
+            input.value = "";
+            return;
+        }
+        // Converte para float com duas casas decimais
+        let valorFloat = parseFloat(valor) / 100;
+        // Formata como moeda brasileira (apenas números e pontuações)
+        input.value = valorFloat.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function atualizarPreco(valor) {
+        // Formata o valor do slider antes de colocar no input
+        let valorFloat = parseFloat(valor);
+        document.getElementById('max_preco').value = valorFloat.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        document.getElementById('slider_val').innerText = Math.round(valorFloat);
+    }
+
+    // Ao digitar manualmente no máximo, atualiza a bolinha
+    document.getElementById('max_preco').addEventListener('input', function () {
+        // Limpa formatação para calcular o valor real para o slider
+        let valorLimpo = this.value.replace(/\./g, "").replace(",", ".");
+        let valor = parseFloat(valorLimpo);
+        let slider = document.getElementById('price_slider');
+        if (valor && !isNaN(valor)) {
+            if (valor <= parseFloat(slider.max) && valor >= 0) {
+                slider.value = valor;
+                document.getElementById('slider_val').innerText = Math.round(valor);
+            }
+        }
+    });
+
+    // Lógica para recolher/expandir o painel de preços
+    const toggleBtn = document.getElementById('toggle_filters_btn');
+    const collapsePanel = document.getElementById('price_collapse_panel');
+
+    toggleBtn.addEventListener('click', function () {
+        collapsePanel.classList.toggle('show');
+        toggleBtn.classList.toggle('active');
+    });
+</script>
+
 <div class="products-grid">
     {% for product in products %}
     <div class="product-card">
-        <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+        <img src="{{ product.imagem }}" alt="{{ product.nome }}" class="product-image">
         <div class="product-info">
-            <h3 class="product-title">{{ product.name }}</h3>
-            <p class="product-desc">{{ product.description }}</p>
+            <h3 class="product-title">{{ product.nome }}</h3>
+            <p class="product-desc">{{ product.descricao }}</p>
             <div class="product-footer">
-                <span class="product-price">R$ {{ "%.2f"|format(product.price) }}</span>
-                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                <span class="product-price">R$ {{ "%.2f"|format(product.preco) }}</span>
+                {% set prod_id_str = product.id|string %}
+                {% if prod_id_str in carrinho %}
+                <div class="quantity-controls-home">
+                    <form action="{{ url_for('cart') }}" method="POST" class="qty-form">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <input type="hidden" name="action" value="decrease">
+                        <input type="hidden" name="proxima_pagina" value="index">
+                        <button type="submit" class="btn-icon-home"><i class="ph ph-minus"></i></button>
+                    </form>
+                    <span class="qty-value-home">{{ carrinho[prod_id_str] }}</span>
+                    <form action="{{ url_for('cart') }}" method="POST" class="qty-form">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <input type="hidden" name="action" value="increase">
+                        <input type="hidden" name="proxima_pagina" value="index">
+                        <button type="submit" class="btn-icon-home"><i class="ph ph-plus"></i></button>
+                    </form>
+                </div>
+                {% else %}
+                <form action="{{ url_for('add_to_cart', id_do_produto=product.id) }}" method="POST">
                     <button type="submit" class="btn btn-primary">
                         <i class="ph ph-plus-circle"></i> Adicionar
                     </button>
                 </form>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title"><i class="ph ph-user-plus"></i> Criar Nova Conta</h2>
+    <p class="form-subtitle">Cadastre-se para gerenciar o mercado e cadastrar novos produtos</p>
+    <form action="{{ url_for('cadastro') }}" method="POST">
+        <div class="form-group">
+            <label for="nome"><i class="ph ph-user"></i> Nome Completo</label>
+            <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+        </div>
+        <div class="form-group">
+            <label for="email"><i class="ph ph-envelope"></i> E-mail</label>
+            <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+            <label for="senha"><i class="ph ph-lock"></i> Senha</label>
+            <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100" style="margin-top: 1rem;">
+            Cadastrar
+        </button>
+    </form>
+    <div class="form-footer">
+        Já tem uma conta? <a href="{{ url_for('login') }}">Faça login aqui</a>
+    </div>
+</div>
+{% endblock %}

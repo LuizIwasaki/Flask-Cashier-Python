@@ -20,11 +20,11 @@
             <tr>
                 <td>
                     <div class="cart-item-info">
-                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
-                        <span>{{ item.product.name }}</span>
+                        <img src="{{ item.product.imagem }}" alt="{{ item.product.nome }}" class="cart-item-img">
+                        <span>{{ item.product.nome }}</span>
                     </div>
                 </td>
-                <td>R$ {{ "%.2f"|format(item.product.price) }}</td>
+                <td>R$ {{ "%.2f"|format(item.product.preco) }}</td>
                 <td>
                     <div class="quantity-controls">
                         <form action="{{ url_for('cart') }}" method="POST" class="qty-form">

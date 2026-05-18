@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="checkout-box">
+    <i class="ph ph-check-circle success-icon"></i>
+    <h1 class="page-title" style="margin-bottom: 1rem;">Compra Finalizada!</h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;">
+        Obrigado por comprar na NexStore. Seu pedido foi processado com sucesso.
+    </p>
+
+    <div style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: var(--radius); text-align: left; margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;">Resumo do Pedido</h3>
+        <ul style="list-style: none; margin-bottom: 1rem;">
+            {% for item in cart_items %}
+            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: var(--text-muted);">
+                <span>{{ item.quantity }}x {{ item.product.nome }}</span>
+                <span>R$ {{ "%.2f"|format(item.subtotal) }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem; font-weight: bold; font-size: 1.2rem;">
+            <span>Total:</span>
+            <span style="color: var(--success);">R$ {{ "%.2f"|format(total) }}</span>
+        </div>
+    </div>
+
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
+        <i class="ph ph-storefront"></i> Voltar à Loja
+    </a>
+</div>
+{% endblock %}

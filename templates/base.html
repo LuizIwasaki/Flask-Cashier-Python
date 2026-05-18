@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
+
 <body>
     <nav class="navbar">
         <a href="{{ url_for('index') }}" class="brand">
@@ -16,6 +18,15 @@
             <span>NexStore</span>
         </a>
         <div class="nav-links">
+            {% if session.get('usuario_nome') %}
+            <span class="user-greeting">Olá, <strong>{{ session.get('usuario_nome') }}</strong></span>
+            {% if session.get('usuario_cargo') == 'admin' %}
+            <a href="{{ url_for('novo_produto') }}" class="nav-btn"><i class="ph ph-package"></i> Novo Produto</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="nav-btn nav-btn-danger"><i class="ph ph-sign-out"></i> Sair</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="nav-btn"><i class="ph ph-user"></i> Entrar/Cadastrar</a>
+            {% endif %}
             <a href="{{ url_for('cart') }}" class="cart-link">
                 <i class="ph ph-shopping-cart"></i> Carrinho
                 {% if cart_count and cart_count > 0 %}
@@ -27,13 +38,13 @@
 
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert {{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert {{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
 
@@ -46,7 +57,6 @@
     </footer>
 
     <script>
-        // Auto dismiss alerts after 3 seconds
         setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
@@ -56,4 +66,5 @@
         }, 3000);
     </script>
 </body>
+
 </html>

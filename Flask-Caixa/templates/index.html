@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Nossos Produtos</h1>
+
+<div class="products-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <img src="{{ product.imagem }}" alt="{{ product.nome }}" class="product-image">
+        <div class="product-info">
+            <h3 class="product-title">{{ product.nome }}</h3>
+            <p class="product-desc">{{ product.descricao }}</p>
+            <div class="product-footer">
+                <span class="product-price">R$ {{ "%.2f"|format(product.preco) }}</span>
+                <form action="{{ url_for('add_to_cart', id_do_produto=product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ph ph-plus-circle"></i> Adicionar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="ph ph-package" style="font-size: 4rem; color: var(--text-muted);"></i>
+        <h3>Nenhum produto disponível</h3>
+        <p>Volte mais tarde para conferir as novidades.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
