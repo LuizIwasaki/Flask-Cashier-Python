@@ -37,7 +37,7 @@ The database is initialized automatically with a default administrator account f
 
 ---
 
-## 🛠️ Installation & Execution
+## 🛠️ Install & Exec
 
 Follow these simple steps to run the application locally:
 
